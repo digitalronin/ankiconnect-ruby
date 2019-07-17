@@ -14,11 +14,14 @@ class Card
   end
 
   def create
-    front = %[#{kanji}<div>#{kana}</div>]
     post(front, english)
   end
 
   private
+
+  def front
+    kana.to_s == "" ? kanji : %[#{kanji}<div>#{kana}</div>]
+  end
 
   def post(front, back)
     uri = URI('http://localhost:8765')
