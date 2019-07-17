@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 
-require "uri"
-require "net/http"
-require "json"
-require "./lib/card"
+require "./lib/ankiconnect"
 
 kanji = ARGV.shift
 kana = ARGV.shift
