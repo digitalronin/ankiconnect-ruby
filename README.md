@@ -1,5 +1,9 @@
 # Ruby library to interact with localhost [ankiconnect] webserver
 
+## Ruby script
+
+./post.rb "テスト" "てすと" "This is a test"
+
 ## Calling the API
 
 curl localhost:8765 -X POST -d "{\"action\": \"deckNames\", \"version\": 6}"

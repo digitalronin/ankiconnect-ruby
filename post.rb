@@ -4,28 +4,53 @@ require "uri"
 require "net/http"
 require "json"
 
-uri = URI('http://localhost:8765')
-req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json; charset=utf-8')
+class Card
+  attr_reader :kanji, :kana, :english
 
-req.body = {
-  "action" => "addNote",
-  "version" => 6,
-  "params" => {
-    "note" => {
-      "deckName" => "Japanese words",
-      "modelName" => "Basic (and reversed card)",
-      "fields" => {
-        "Front" => "これは<div>テストです</div>",
-        "Back" => "This is test back"
-      },
-      "options" => { "allowDuplicate" => false },
-      "tags" => []
-    }
-  }
-}.to_json
+  def initialize(arg)
+    @kanji = arg.fetch(:kanji)
+    @kana = arg.fetch(:kana)
+    @english = arg.fetch(:english)
+  end
 
-res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-  http.request(req)
+  def create
+    front = %[#{kanji}<div>#{kana}</div>]
+    post(front, english)
+  end
+
+  private
+
+  def post(front, back)
+    uri = URI('http://localhost:8765')
+    req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json; charset=utf-8')
+
+    req.body = {
+      "action" => "addNote",
+      "version" => 6,
+      "params" => {
+        "note" => {
+          "deckName" => "Japanese words",
+          "modelName" => "Basic (and reversed card)",
+          "fields" => {
+            "Front" => front,
+            "Back" => back
+          },
+          "options" => { "allowDuplicate" => false },
+          "tags" => ["ruby"]
+        }
+      }
+    }.to_json
+
+    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+      http.request(req)
+    end
+
+    res
+  end
 end
 
-pp res
+kanji = ARGV.shift
+kana = ARGV.shift
+english = ARGV.shift
+
+pp Card.new(kanji: kanji, kana: kana, english: english).create
